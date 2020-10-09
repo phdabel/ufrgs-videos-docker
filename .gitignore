@@ -1,0 +1,6 @@
+.env
+*.swp
+_host-volumes
+
+.vscode/
+.idea/

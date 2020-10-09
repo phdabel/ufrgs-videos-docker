@@ -1,0 +1,58 @@
+version: '3.7'
+services:
+   web:
+      image: nginx:latest
+      networks:
+         - app_net
+      restart: unless-stopped
+      ports:
+         - "80:80"
+         - "443:443"
+      volumes:
+         # Application
+         - ./_host-volumes/app/:/opt/app/:delegated
+         # Certificates and other configurations
+         - ./php/etc/nginx/conf.d/:/etc/nginx/conf.d/
+         - ./php/etc/nginx/certs/:/etc/nginx/certs/:delegated
+         # Nginx Logs
+         - ./_host-volumes/logs/:/var/log/nginx/
+   php:
+      build: 
+         dockerfile: Dockerfile-debian
+         context: 'php'
+      image: yiiframework/php:7.4-fpm
+      networks:
+         - app_net
+      restart: unless-stopped
+      links:
+         - pgsql
+         - web:videos.dev
+      volumes:
+         - ./tests:/tests:delegated
+         # Application
+         - ./_host-volumes/app/:/opt/app/:delegated
+         # Composer cache
+         - /home/abel/.composer-docker/cache:/root/.composer/cache:delegated
+         # supervisor log
+         - ./_host-volumes/logs/:/var/log/supervisor/
+   pgsql:
+      image: postgres:9.5
+      ports:
+         - "5432:5432"
+      restart: unless-stopped
+      networks:
+         - app_net
+      environment:
+         - POSTGRES_DB=ufrgsvideos
+         - POSTGRES_USER=ufrgsvideos
+         - POSTGRES_PASSWORD=ufrgsvideos
+   cache:
+      image: redis
+      restart: unless-stopped
+      networks:
+         - app_net
+
+networks:
+   app_net:
+      driver: bridge
+
