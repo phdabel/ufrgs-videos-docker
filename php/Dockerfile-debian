@@ -64,7 +64,10 @@ RUN if [ $X_LEGACY_GD_LIB = 1 ]; then \
         mbstring \
         opcache \
         pdo_mysql \
-        pdo_pgsql
+        pdo_pgsql \
+        mysqli \
+        pdo
+
 
 # Install PECL extensions
 # see http://stackoverflow.com/a/8154466/291573) for usage of `printf`
@@ -90,8 +93,6 @@ COPY image-files/ /
 COPY etc/php/php.ini-development /usr/local/etc/php/conf.d/php.ini
 
 COPY etc/supervisor/ufrgsvideos.conf /etc/supervisor/conf.d/ufrgsvideos.conf
-
-RUN service supervisor restart
 
 COPY etc/nginx/certs/dev-app.crt /etc/ssl/certs/dev-app.crt
 

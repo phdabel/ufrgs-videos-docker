@@ -11,6 +11,8 @@ services:
       volumes:
          # Application
          - ./_host-volumes/app/:/opt/app/:delegated
+         # upload directory
+         - ./_host-volumes/app/web/uploads/:/opt/app/web/uploads/:rw
          # Certificates and other configurations
          - ./php/etc/nginx/conf.d/:/etc/nginx/conf.d/
          - ./php/etc/nginx/certs/:/etc/nginx/certs/:delegated
@@ -25,7 +27,7 @@ services:
          - app_net
       restart: unless-stopped
       links:
-         - pgsql
+         - mariadb
          - web:videos.dev
       volumes:
          - ./tests:/tests:delegated
@@ -35,17 +37,23 @@ services:
          - /home/abel/.composer-docker/cache:/root/.composer/cache:delegated
          # supervisor log
          - ./_host-volumes/logs/:/var/log/supervisor/
-   pgsql:
-      image: postgres:9.5
-      ports:
-         - "5432:5432"
+   mariadb:
+      build:
+         context: db
+         dockerfile: Dockerfile
+      image: mariadb:latest
+      expose:
+         - 3306
       restart: unless-stopped
       networks:
          - app_net
       environment:
-         - POSTGRES_DB=ufrgsvideos
-         - POSTGRES_USER=ufrgsvideos
-         - POSTGRES_PASSWORD=ufrgsvideos
+         - MYSQL_ROOT_PASSWORD=senhadoroot
+         - MYSQL_DATABASE=ufrgsvideos
+         - MYSQL_USER=ufrgsvideos
+         - MYSQL_PASSWORD=ufrgsvideos
+      volumes:
+         - ./_host-volumes/db/init:/docker-entrypoint-initdb.d
    cache:
       image: redis
       restart: unless-stopped

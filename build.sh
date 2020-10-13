@@ -29,6 +29,12 @@ fi
 
 sudo docker-compose up -d --build
 sudo docker-compose run --rm -w "$CONTAINER_APP_DIR" php composer install
-sudo docker-compose run --rm -w $CONTAINER_APP_DIR php ./init --env=Development --overwrite=All
-sudo docker-compose run --rm -w $CONTAINER_APP_DIR php ./yii migrate --interactive=0
+sudo docker-compose run --rm -w "$CONTAINER_APP_DIR" php ./init --env=Development --overwrite=All
+
+sleep 5
+sudo docker-compose run --rm -w "$CONTAINER_APP_DIR" php ./yii migrate --interactive=0
+
+#sudo docker exec -it yii2fpm_php_1 php ./yii migrate --interactive=0
+sudo docker exec -it yii2fpm_php_1 service supervisor stop
+sudo docker exec -it yii2fpm_php_1 service supervisor start
 #sudo docker-compose run --rm -w "${CONTAINER_APP_DIR}" php php -d error_reporting="E_ALL ^ E_DEPRECATED" vendor/bin/phpunit frontend/tests --exclude db
