@@ -45,6 +45,13 @@ RUN apt-get update && \
     docker-php-ext-configure ldap --with-libdir=/lib/x86_64-linux-gnu/ && \
     docker-php-ext-install ldap
 
+# Install MemCached extension for PHP
+RUN apt-get install -y \
+            memcached \
+            libmemcached-dev \
+    && pecl install memcached \
+    && docker-php-ext-enable memcached
+
 # Install PHP extensions required for Yii 2.0 Framework
 ARG X_LEGACY_GD_LIB=0
 RUN if [ $X_LEGACY_GD_LIB = 1 ]; then \
@@ -79,11 +86,9 @@ RUN if [ $X_LEGACY_GD_LIB = 1 ]; then \
 # see http://stackoverflow.com/a/8154466/291573) for usage of `printf`
 RUN printf "\n" | pecl install \
         imagick \
-        xdebug \
-        mongodb && \
+        xdebug && \
     docker-php-ext-enable \
-        imagick \
-        mongodb
+        imagick
 
 # Environment settings
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
