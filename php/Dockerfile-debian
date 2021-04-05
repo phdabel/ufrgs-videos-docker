@@ -98,6 +98,8 @@ COPY image-files/ /
 
 COPY etc/php/php.ini-development /usr/local/etc/php/conf.d/php.ini
 
+# COPY etc/php/www.conf /usr/local/etc/php-fpm.d/www.conf
+
 COPY etc/supervisor/ufrgsvideos.conf /etc/supervisor/conf.d/ufrgsvideos.conf
 
 COPY etc/nginx/certs/dev-app.crt /etc/ssl/certs/dev-app.crt
@@ -110,7 +112,8 @@ RUN chmod 700 \
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- \
         --filename=composer.phar \
-        --install-dir=/usr/local/bin && \
+        --install-dir=/usr/local/bin \
+        --version=1.10.17 && \
     composer clear-cache
 
 # Install composer plugins
