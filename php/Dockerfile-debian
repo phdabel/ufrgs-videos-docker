@@ -46,11 +46,12 @@ RUN apt-get update && \
     docker-php-ext-install ldap
 
 # Install MemCached extension for PHP
-RUN apt-get install -y \
-            memcached \
-            libmemcached-dev \
-    && pecl install memcached \
-    && docker-php-ext-enable memcached
+# RUN apt-get install -y \
+#            memcached \
+#            libmemcached-dev \
+#    && git clone https://github.com/php-memcached-dev/php-memcached /usr/local/include/php/ext/memcached \
+#    && docker-php-ext-configure /usr/local/include/php/ext/memcached --disable-memcached-sasl \
+#    && docker-php-ext-install /usr/local/include/php/ext/memcached
 
 # Install PHP extensions required for Yii 2.0 Framework
 ARG X_LEGACY_GD_LIB=0

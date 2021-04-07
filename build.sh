@@ -16,7 +16,7 @@ then
     git clone https://gitlab.cpd.ufrgs.br/teamvideos/ufrgs-videos.git "${HOST_APP_DIR}"
 fi
 
-if [ ! "$(ls -A $CERTS_PATH)" ]
+if [ "$(ls -A $CERTS_PATH | wc -l)" -le 1 ]
 then
 
     # generating ssl key and certificate
@@ -28,9 +28,45 @@ then
     sudo openssl dhparam -out "$CERTS_PATH"dhparam.pem 2048
 fi
 
-sudo docker-compose up -d --build
-sudo docker-compose run --rm -w "$CONTAINER_APP_DIR" php composer install
-sudo docker-compose run --rm -w "$CONTAINER_APP_DIR" php ./init --env=Development --overwrite=All
+if [ ! -z $1 ]
+then
+    # create the build
+    if [ $1 = "create" ]
+    then
+
+        sudo docker-compose up -d --build
+        sudo docker-compose run --rm -w "$CONTAINER_APP_DIR" php composer install
+        sudo docker-compose run --rm -w "$CONTAINER_APP_DIR" php ./init --env=Development --overwrite=All
+    fi
+
+    # starts the build (default value)
+    if [ $1 = "start" ]
+    then
+        sudo docker-compose up -d
+    fi
+
+    # stops the build
+    if [ $1 = "stop" ]
+    then
+        sudo docker-compose down --remove-orphans
+    fi
+
+    # stops and clean images and containers
+    if [ $1 = "clean" ]
+    then
+        sudo docker-compose down --remove-orphans
+        # force cleaning
+        if [ ! -z $2 ] && [ $2 = "--force" ]
+        then
+            sudo docker system prune -af
+        else
+            sudo docker sytem prune -a
+        fi
+    fi
+else
+    sudo docker-compose up -d
+fi
+
 
 if [ ! "$(ls -A $DB_PATH)" ]
 then
