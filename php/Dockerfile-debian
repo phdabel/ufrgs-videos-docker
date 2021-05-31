@@ -104,7 +104,7 @@ COPY image-files/ /
 
 COPY etc/php/php.ini-development /usr/local/etc/php/conf.d/php.ini
 
-# COPY etc/php/www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY etc/php/www.conf /usr/local/etc/php-fpm.d/www.conf
 
 COPY etc/supervisor/ufrgsvideos.conf /etc/supervisor/conf.d/ufrgsvideos.conf
 
